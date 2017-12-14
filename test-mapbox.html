@@ -1,0 +1,125 @@
+<link rel="import" href="bower_components/polymer/polymer-element.html">
+<link rel="import" href="bower_components/paper-input/paper-input.html">
+<link rel="import" href="bower_components/paper-slider/paper-slider.html">
+
+<link rel="import" href="bower_components/mapbox-gl/mapbox-gl.html">
+<link rel="import" href="bower_components/mapbox-gl/mapbox-layer.html">
+<link rel="import" href="bower_components/mapbox-gl/geojson-source.html">
+
+<dom-module id="test-mapbox">
+  <template>
+    <style is="custom-style" include="demo-pages-shared-styles">
+      mapbox-gl {
+        height: 400px;
+        width: 100%;
+      }
+    </style>
+    <mapbox-gl
+      interactive
+      access-token="[[key]]"
+      map="{{map}}"
+      zoom="2"
+      latitude="40.7135"
+      longitude="-74.0066"
+      ></mapbox-gl>
+
+    <template is="dom-repeat" items="[[layers]]">
+      <mapbox-layer
+        map="[[map]]"
+        layer-id="[[item.id]]"
+        rendering-type="circle"
+        source="[[item.source]]"
+        color="[[item.color]]"
+        opacity="0.7"
+        events-to-watch="click"
+        on-mapbox-layer-click="_handleClick"
+        ></mapbox-layer>
+
+
+      <geojson-source
+        map="[[map]]"
+        source-id="[[item.source]]"
+        source-data="[[item.data]]"></geojson-source>
+    </template>
+  </template>
+
+  <script>
+    /**
+     * `test-mapbox`
+     *
+     *
+     * @customElement
+     * @polymer
+     * @demo demo/index.html
+     */
+    class TestMapbox extends Polymer.Element {
+      static get is() { return 'test-mapbox'; }
+      static get properties() {
+        return {
+          key: {
+            type: String,
+            value: 'pk.eyJ1IjoiZXRlcm5hMiIsImEiOiJjaXppZjRoaTIwMmYxMndsNHJ4dzR1eWJsIn0.MvJ5fsV47RHlSAt2fBEKLg'
+          }
+        };
+      }
+
+      _handleClick (e) {
+        console.log(e)
+      }
+
+      ready () {
+        super.ready()
+        setTimeout(() => {
+          this.set('layers', [
+            {
+              id: 'layer1',
+              type: 'circle',
+              color: '#faa',
+              source: 'source1',
+              data: {
+                type: 'FeatureCollection',
+                features: [
+                  {
+                    type: 'Feature',
+                    geometry: {
+                      type: 'Point',
+                      coordinates: [-77.03238901390978, 38.913188059745586]
+                    },
+                    properties: {
+                      title: 'Mapbox DC',
+                      icon: 'monument'
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              id: 'layer2',
+              type: 'circle',
+              color: '#ffa',
+              source: 'source2',
+              data: {
+                type: 'FeatureCollection',
+                features: [
+                  {
+                    type: 'Feature',
+                    geometry: {
+                      type: 'Point',
+                      coordinates: [-122.414, 37.776]
+                    },
+                    properties: {
+                      title: 'Mapbox SF',
+                      icon: 'harbor'
+                    }
+                  }
+                ]
+              }
+            }
+          ])
+        }, 500)
+      }
+    }
+
+    window.customElements.define(TestMapbox.is, TestMapbox);
+  </script>
+</dom-module>
